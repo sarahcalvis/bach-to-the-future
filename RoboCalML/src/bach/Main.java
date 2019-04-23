@@ -23,7 +23,7 @@ public class Main {
 		}
 		
 		//shuffle the data, split it into a train set and a test set
-		//ShuffleAndSplit();
+		ShuffleAndSplit();
 		
 	}
 	
@@ -187,7 +187,7 @@ public class Main {
 		Collections.shuffle(chords);
 				
 		//find where to split the data
-		int eightyPercent = (chords.size()/10) * 80;
+		int eightyPercent = (chords.size()/10) * 8;
 		
 		//make a train set
 		train = new ArrayList<Chord>();
