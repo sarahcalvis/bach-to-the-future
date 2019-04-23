@@ -7,7 +7,7 @@ import java.util.Collections;
 
 public class Main {
 	//holds all the data
-	static ArrayList<Chord> chords;
+	static ArrayList<Chord> data;
 	//holds the train set
 	static ArrayList<Chord> train;
 	//holds the test set
@@ -16,7 +16,7 @@ public class Main {
 	public static void main(String[] args) {
 		//read in the data
 		try {
-			chords = ReadData();
+			data = ReadData();
 		}
 		catch (FileNotFoundException f) {
 			System.out.println("File not found");
@@ -25,10 +25,15 @@ public class Main {
 		//shuffle the data, split it into a train set and a test set
 		ShuffleAndSplit();
 		
+		//perform classification with a decision tree
+		DecisionTree decisionTree = new DecisionTree(train, test);
+		
+		//perform classification with naive bayes
+		NaiveBayes naiveBayes = new NaiveBayes(train, test);	
 	}
 	
 	public static ArrayList<Chord> ReadData() throws FileNotFoundException {
-		ArrayList<Chord> chords = new ArrayList<Chord>();
+		ArrayList<Chord> data = new ArrayList<Chord>();
 		
 		//data to describe each chord
 		String sequence, bass, chordLabel;
@@ -172,33 +177,33 @@ public class Main {
 					eventNo, meter);
 			
 			//add the new chord to the arraylist
-			chords.add(newCord);
+			data.add(newCord);
 		}
 		
 		//close the chords scanner
 		chordsScan.close();
 		
 		//return the arraylist
-		return chords;
+		return data;
 	}
 	
 	public static void ShuffleAndSplit() {
 		//shuffle the data
-		Collections.shuffle(chords);
+		Collections.shuffle(data);
 				
 		//find where to split the data
-		int eightyPercent = (chords.size()/10) * 8;
+		int eightyPercent = (data.size()/10) * 8;
 		
 		//make a train set
 		train = new ArrayList<Chord>();
 		for (int i = 0; i < eightyPercent; i++) {
-			train.add(chords.get(i));
+			train.add(data.get(i));
 		}
 			
 		//make a test set
 		test = new ArrayList<Chord>();
-		for (int i = eightyPercent; i < chords.size(); i++) {
-			train.add(chords.get(i));
+		for (int i = eightyPercent; i < data.size(); i++) {
+			train.add(data.get(i));
 		}
 	}
 }
