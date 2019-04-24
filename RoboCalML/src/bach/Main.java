@@ -15,7 +15,9 @@ public class Main {
 	//holds the possible chords
 	static ArrayList<String> chordLabels;
 	//holds the number of occurrences of each chord in chordLabels
-	static ArrayList<Integer> chordCounts;
+	static ArrayList<Integer> chordCountsTrain;
+	//holds the number of occurrences of each chord in chordLabels
+	static ArrayList<Integer> chordCountsTest;
 	
 	public static void main(String[] args) {
 		//read in the data
@@ -33,11 +35,14 @@ public class Main {
 		chordLabels = getPossibleChords();
 		
 		//get the frequency of each chord
-		chordCounts = getChordCounts();
+		chordCountsTrain = getChordCountsTrain();
 		
-		for (int i = 0; i < chordLabels.size(); i++)  {
-			System.out.println(chordLabels.get(i) + " occurs " + chordCounts.get(i) + " times");
-		}
+		//get the frequency of each chord
+		chordCountsTest = getChordCountsTest();
+		
+//		for (int i = 0; i < chordLabels.size(); i++)  {
+//			System.out.println(chordLabels.get(i) + " occurs " + chordCounts.get(i) + " times");
+//		}
 		
 		classify();
 	}
@@ -221,9 +226,22 @@ public class Main {
 	
 	//method to create a naive bayes classifier
 	public static void classify() {
+		//number of features
+		int numFeatures = 14;
+		
+		//probability that a chord is of each type
 		ArrayList<Double> probabilities;
 		
+		//count number of correct guesses
 		int numCorrect = 0;
+		
+		//count number of correct guesses for each chord label
+		ArrayList<Integer> correctByChord = new ArrayList<Integer>();
+		//initialize the array so nothing breaks :)
+		for (int i = 0; i < chordLabels.size(); i++) {
+			correctByChord.add(0);
+		}
+		
 		for (Chord testChord: test) {
 			//holds the probability that the chord has each label
 			probabilities = new ArrayList<Double>();
@@ -235,167 +253,98 @@ public class Main {
 			
 			//get the prior probabilities by dividing the number of occurences of the chord by the size of the train set
 			for (int i = 0; i < chordLabels.size(); i++) {
-				probabilities.set(i, Math.log((double)chordCounts.get(i)/train.size()));
+				probabilities.set(i, Math.log((double)chordCountsTrain.get(i)/train.size()));
 			}
-				
-			ArrayList<Integer> cCount = new ArrayList<Integer>();
-			ArrayList<Integer> cSharpCount = new ArrayList<Integer>();
-			ArrayList<Integer> dCount = new ArrayList<Integer>();
-			ArrayList<Integer> dSharpCount = new ArrayList<Integer>();
-			ArrayList<Integer> eCount = new ArrayList<Integer>();
-			ArrayList<Integer> fCount = new ArrayList<Integer>();
-			ArrayList<Integer> fSharpCount = new ArrayList<Integer>();
-			ArrayList<Integer> gCount = new ArrayList<Integer>();
-			ArrayList<Integer> gSharpCount = new ArrayList<Integer>();
-			ArrayList<Integer> aCount = new ArrayList<Integer>();
-			ArrayList<Integer> aSharpCount = new ArrayList<Integer>();
-			ArrayList<Integer> bCount = new ArrayList<Integer>();
-			ArrayList<Integer> bassCount = new ArrayList<Integer>();
-			ArrayList<Integer> meterCount = new ArrayList<Integer>();
-
-			for (int i = 0; i < chordLabels.size(); i++) {
-				cCount.add(0);
-				cSharpCount.add(0);
-				dCount.add(0);
-				dSharpCount.add(0);
-				eCount.add(0);
-				fCount.add(0);
-				fSharpCount.add(0);
-				gCount.add(0);
-				gSharpCount.add(0);
-				aCount.add(0);
-				aSharpCount.add(0);
-				bCount.add(0);
-				bassCount.add(0);
-				meterCount.add(0);
+			
+			//counts the number of each feature we have
+			ArrayList<ArrayList<Integer>> featureCounts = new ArrayList<ArrayList<Integer>>();			
+			for (int j = 0; j < numFeatures; j++) {
+				featureCounts.add(new ArrayList<Integer>());
+				for (int i = 0; i < chordLabels.size(); i++) {
+					featureCounts.get(j).add(0);
+				}
 			}
 			
 			//first count how many of each type of chord have the same c value as this chord
 			for (Chord trainChord: train) {
+				int i = 0;
 				if (trainChord.getC() == testChord.getC()) {
-					int index = chordLabels.indexOf(trainChord.getChordLabel());
-					if (index != -1) {
-						int newVal = cCount.get(index) + 1;
-						cCount.set(index, newVal);
-					}
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
 				}
+				i++;
 				if (trainChord.getCSharp() == testChord.getCSharp()) {
-					int index = chordLabels.indexOf(trainChord.getChordLabel());
-					if (index != -1) {
-						int newVal = cSharpCount.get(index) + 1;
-						cSharpCount.set(index, newVal);
-					}
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
 				}
+				i++;
 				if (trainChord.getD() == testChord.getD()) {
-					int index = chordLabels.indexOf(trainChord.getChordLabel());
-					if (index != -1) {
-						int newVal = dCount.get(index) + 1;
-						dCount.set(index, newVal);
-					}
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
 				}
+				i++;
 				if (trainChord.getDSharp() == testChord.getDSharp()) {
-					int index = chordLabels.indexOf(trainChord.getChordLabel());
-					if (index != -1) {
-						int newVal = dSharpCount.get(index) + 1;
-						dSharpCount.set(index, newVal);
-					}
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
 				}
+				i++;
 				if (trainChord.getE() == testChord.getE()) {
-					int index = chordLabels.indexOf(trainChord.getChordLabel());
-					if (index != -1) {
-						int newVal = eCount.get(index) + 1;
-						eCount.set(index, newVal);
-					}
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
 				}
+				i++;
 				if (trainChord.getF() == testChord.getF()) {
-					int index = chordLabels.indexOf(trainChord.getChordLabel());
-					if (index != -1) {
-						int newVal = fCount.get(index) + 1;
-						fCount.set(index, newVal);
-					}
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
 				}
+				i++;
 				if (trainChord.getFSharp() == testChord.getFSharp()) {
-					int index = chordLabels.indexOf(trainChord.getChordLabel());
-					if (index != -1) {
-						int newVal = fSharpCount.get(index) + 1;
-						fSharpCount.set(index, newVal);
-					}
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
 				}
+				i++;
 				if (trainChord.getG() == testChord.getG()) {
-					int index = chordLabels.indexOf(trainChord.getChordLabel());
-					if (index != -1) {
-						int newVal = gCount.get(index) + 1;
-						gCount.set(index, newVal);
-					}
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
 				}
+				i++;
 				if (trainChord.getGSharp() == testChord.getGSharp()) {
-					int index = chordLabels.indexOf(trainChord.getChordLabel());
-					if (index != -1) {
-						int newVal = gSharpCount.get(index) + 1;
-						gSharpCount.set(index, newVal);
-					}
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
 				}
+				i++;
 				if (trainChord.getA() == testChord.getA()) {
-					int index = chordLabels.indexOf(trainChord.getChordLabel());
-						if (index != -1) {
-						int newVal = aCount.get(index) + 1;
-						aCount.set(index, newVal);
-					}
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
 				}
+				i++;
 				if (trainChord.getASharp() == testChord.getASharp()) {
-					int index = chordLabels.indexOf(trainChord.getChordLabel());
-					if (index != -1) {
-						int newVal = aSharpCount.get(index) + 1;
-						aSharpCount.set(index, newVal);
-					}
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
 				}
+				i++;
 				if (trainChord.getB() == testChord.getB()) {
-					int index = chordLabels.indexOf(trainChord.getChordLabel());
-					if (index != -1) {
-						int newVal = bCount.get(index) + 1;
-						bCount.set(index, newVal);
-					}
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
 				}
+				i++;
 				if (trainChord.getBass().equals(testChord.getBass())) {
-					int index = chordLabels.indexOf(trainChord.getChordLabel());
-					if (index != -1) {
-						int newVal = bassCount.get(index) + 1;
-						bassCount.set(index, newVal);
-					}
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
 				}
+				i++;
 				if (trainChord.getMeter() == testChord.getMeter()) {
-					int index = chordLabels.indexOf(trainChord.getChordLabel());
-					if (index != -1) {
-						int newVal = meterCount.get(index) + 1;
-						meterCount.set(index, newVal);
-					}
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
 				}
 			}
 
 			//update probabilities based on an added feature
-			probabilities = updateProbabilities(probabilities, cCount);
-			probabilities = updateProbabilities(probabilities, cSharpCount);
-			probabilities = updateProbabilities(probabilities, dCount);
-			probabilities = updateProbabilities(probabilities, dSharpCount);
-			probabilities = updateProbabilities(probabilities, eCount);
-			probabilities = updateProbabilities(probabilities, fCount);
-			probabilities = updateProbabilities(probabilities, fSharpCount);
-			probabilities = updateProbabilities(probabilities, gCount);
-			probabilities = updateProbabilities(probabilities, gSharpCount);
-			probabilities = updateProbabilities(probabilities, aCount);
-			probabilities = updateProbabilities(probabilities, aSharpCount);
-			probabilities = updateProbabilities(probabilities, bCount);
-			probabilities = updateProbabilities(probabilities, bassCount);
-			probabilities = updateProbabilities(probabilities, meterCount);
+			probabilities = updateProbabilities(probabilities, featureCounts);
 					
-			//calculate accuracy
+			//update number of correct answers
 			int ind = probabilities.indexOf(Collections.max(probabilities));
-			if (chordLabels.get(ind).contentEquals(testChord.getChordLabel())) {
+			if (chordLabels.get(ind).equals(testChord.getChordLabel())) {
 				numCorrect++;
+				int newNum = correctByChord.get(ind) + 1;
+				correctByChord.set(ind, newNum);
 			}
 		}
+		//print accuracy
 		System.out.println("Number Correct: " + numCorrect + "\nTotal: " + test.size());
 		System.out.println("Accuracy: " + (double)numCorrect/test.size());
+		
+		//print accuracy by chord
+		for (int i = 0; i < correctByChord.size(); i++) {
+			System.out.println("\n" + chordLabels.get(i) + " Number Correct: " + correctByChord.get(i) + "\nTotal: " + chordCountsTest.get(i));
+			System.out.println("Accuracy: " + (double)correctByChord.get(i)/chordCountsTest.get(i));
+		}
 	}
 		
 	//get all the chords available in the train set
@@ -411,7 +360,7 @@ public class Main {
 	}
 	
 	//get the number of occurrences of each chord in the train set
-	public static ArrayList<Integer> getChordCounts() {
+	public static ArrayList<Integer> getChordCountsTrain() {
 		ArrayList<Integer> chordCounts = new ArrayList<Integer>();
 		for (int i = 0; i < chordLabels.size(); i++)  {
 			chordCounts.add(0);
@@ -425,14 +374,43 @@ public class Main {
 		return chordCounts;
 	}
 	
-	//update the probabilities bassed on an added feature
-	public static ArrayList<Double> updateProbabilities(ArrayList<Double> probabilities, ArrayList<Integer> newFeatureCounts) {
+	//get the number of occurrences of each chord in the test set
+	public static ArrayList<Integer> getChordCountsTest() {
+		ArrayList<Integer> chordCounts = new ArrayList<Integer>();
+		for (int i = 0; i < chordLabels.size(); i++)  {
+			chordCounts.add(0);
+		}
+		for (Chord trainChord: test) {
+			String label = trainChord.getChordLabel();
+			int index = chordLabels.indexOf(label);
+			if (index != -1) {
+				int newCount = chordCounts.get(index) + 1;
+				chordCounts.set(index, newCount);
+			}
+		}
+		return chordCounts;
+	}
+	
+	//update the probabilities based on an added feature
+	public static ArrayList<Double> updateProbabilities(ArrayList<Double> probabilities, ArrayList<ArrayList<Integer>> newFeatureCounts) {
 		//then divide it by the number of chords of that label in the train set
-		for (int i = 0; i < chordLabels.size(); i++) {
-			double newProb = Math.log((double)newFeatureCounts.get(i)/chordCounts.get(i));
-			newProb += probabilities.get(i);
-			probabilities.set(i, newProb);
+		for (int j = 0; j < newFeatureCounts.size(); j++) {
+			for (int i = 0; i < chordLabels.size(); i++) {
+				double newProb = Math.log((double)newFeatureCounts.get(j).get(i)/chordCountsTrain.get(i));
+				newProb += probabilities.get(i);
+				probabilities.set(i, newProb);
+			}
 		}
 		return probabilities;
 	}
+	
+	//update the count of a particular feature
+	public static ArrayList<ArrayList<Integer>> updateFeatureCounts(Chord trainChord, ArrayList<ArrayList<Integer>> featureCounts, int featureIndex) {
+		int index = chordLabels.indexOf(trainChord.getChordLabel());
+		if (index != -1) {
+			int newVal = featureCounts.get(featureIndex).get(index) + 1;
+			featureCounts.get(featureIndex).set(index, newVal);
+		}
+		return featureCounts;
+	}	
 }
