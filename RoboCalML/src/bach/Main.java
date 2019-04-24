@@ -40,10 +40,7 @@ public class Main {
 		//get the frequency of each chord
 		chordCountsTest = getChordCountsTest();
 		
-//		for (int i = 0; i < chordLabels.size(); i++)  {
-//			System.out.println(chordLabels.get(i) + " occurs " + chordCounts.get(i) + " times");
-//		}
-		
+		//perform naive bayes inference!
 		classify();
 	}
 	
