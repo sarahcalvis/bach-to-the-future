@@ -2,11 +2,11 @@ package bach;
 
 public class Chord {
 	String sequence, bass, chordLabel;
-	Boolean c, cSharp, d, dSharp, e, f, fSharp, g, gSharp, a, aSharp, b;
+	boolean c, cSharp, d, dSharp, e, f, fSharp, g, gSharp, a, aSharp, b;
 	int eventNo, meter;
 	public Chord(String sequence, String bass, String chordLabel, 
-					Boolean c, Boolean cSharp, Boolean d, Boolean dSharp, Boolean e, Boolean f,
-					Boolean fSharp, Boolean g, Boolean gSharp, Boolean a, Boolean aSharp, Boolean b,
+					boolean c, boolean cSharp, boolean d, boolean dSharp, boolean e, boolean f,
+					boolean fSharp, boolean g, boolean gSharp, boolean a, boolean aSharp, boolean b,
 					int eventNo, int meter) {
 		this.sequence = sequence;
 		this.bass = bass;
@@ -31,7 +31,67 @@ public class Chord {
 		return chordLabel;
 	}
 	
-	public Boolean getC() {
+	public boolean getC() {
 		return c;
+	}
+	
+	public boolean getCSharp() {
+		return cSharp;
+	}
+	
+	public boolean getD() {
+		return d;
+	}
+	
+	public boolean getDSharp() {
+		return dSharp;
+	}
+	
+	public boolean getE() {
+		return e;
+	}
+	
+	public boolean getF() {
+		return f;
+	}
+	
+	public boolean getFSharp() {
+		return fSharp;
+	}
+	
+	public boolean getG() {
+		return g;
+	}
+	
+	public boolean getGSharp() {
+		return gSharp;
+	}
+	
+	public boolean getA() {
+		return a;
+	}
+	
+	public boolean getASharp() {
+		return aSharp;
+	}
+	
+	public boolean getB() {
+		return b;
+	}
+	
+	public String getBass() {
+		return bass;
+	}
+	
+	public String getSequence() {
+		return bass;
+	}
+	
+	public int getEventNo() {
+		return eventNo;
+	}
+	
+	public int getMeter() {
+		return meter;
 	}
 }

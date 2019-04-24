@@ -38,7 +38,7 @@ public class Main {
 		
 		//data to describe each chord
 		String sequence, bass, chordLabel;
-		Boolean c, cSharp, d, dSharp, e, f, fSharp, g, gSharp, a, aSharp, b;
+		boolean c, cSharp, d, dSharp, e, f, fSharp, g, gSharp, a, aSharp, b;
 		int eventNo, meter;
 		
 		//open the data file
