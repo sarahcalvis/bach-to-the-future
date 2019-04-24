@@ -32,196 +32,16 @@ public class Main {
 		ShuffleAndSplit();
 		
 		//get all the chord options
-		chordLabels = getPossibleChords();
+		getPossibleChords();
 		
-		//get the frequency of each chord
-		chordCountsTrain = getChordCountsTrain();
+		//get the number of occurrences of each chord in the train and test set
+		getChordCounts();
 		
-		//get the frequency of each chord
-		chordCountsTest = getChordCountsTest();
-		
-		//perform naive bayes inference!
+		//do a bayes
 		classify();
 	}
 	
-	//read in the data
-	public static ArrayList<Chord> ReadData() throws FileNotFoundException {
-		ArrayList<Chord> data = new ArrayList<Chord>();
-		
-		//data to describe each chord
-		String sequence, bass, chordLabel;
-		boolean c, cSharp, d, dSharp, e, f, fSharp, g, gSharp, a, aSharp, b;
-		int eventNo, meter;
-		
-		//open the data file
-		File chordsData = new File("data.txt");
-		Scanner chordsScan = new Scanner(chordsData);
-		
-		//read in the file line by line
-		while (chordsScan.hasNextLine()) {
-			
-			//each line in the file represents a chorale
-			String chordStr = chordsScan.nextLine();
-			
-			//open a scanner for the chorale
-			Scanner chordScan = new Scanner(chordStr);
-			
-			//there are no spaces in this file, just commas :)
-			chordScan.useDelimiter(",");
-			
-			//get the sequence
-			sequence = chordScan.next();
-			
-			//get the event number
-			eventNo = chordScan.nextInt();
-			
-			//check if chord contains c
-			if (chordScan.next().equals("YES")) {
-				c = true;
-			}
-			else {
-				c = false;
-			}
-			
-			//check if chord contains c#
-			if (chordScan.next().equals("YES")) {
-				cSharp = true;
-			}
-			else {
-				cSharp = false;
-			}
-			
-			//check if chord contains d
-			if (chordScan.next().equals("YES")) {
-				d = true;
-			}
-			else {
-				d = false;
-			}
-
-			//check if chord contains d#
-			if (chordScan.next().equals("YES")) {
-				dSharp = true;
-			}
-			else {
-				dSharp = false;
-			}
-
-			//check if chord contains e
-			if (chordScan.next().equals("YES")) {
-				e = true;
-			}
-			else {
-				e = false;
-			}
-
-			//check if chord contains f
-			if (chordScan.next().equals("YES")) {
-				f = true;
-			}
-			else {
-				f = false;
-			}
-			
-			//check if chord contains f#
-			if (chordScan.next().equals("YES")) {
-				fSharp = true;
-			}
-			else {
-				fSharp = false;
-			}
-
-			//check if chord contains g
-			if (chordScan.next().equals("YES")) {
-				g = true;
-			}
-			else {
-				g = false;
-			}
-
-			//check if chord contains g#
-			if (chordScan.next().equals("YES")) {
-				gSharp = true;
-			}
-			else {
-				gSharp = false;
-			}
-		
-			//check if chord contains a
-			if (chordScan.next().equals("YES")) {
-				a = true;
-			}
-			else {
-				a = false;
-			}
-			
-			//check if chord contains a#
-			if (chordScan.next().equals("YES")) {
-				aSharp = true;
-			}
-			else {
-				aSharp = false;
-			}
-
-			//check if chord contains b
-			if (chordScan.next().equals("YES")) {
-				b = true;
-			}
-			else {
-				b = false;
-			}
-			
-			//find what note is the base of the chord
-			bass = chordScan.next();
-			
-			//find meter of chorale
-			meter = chordScan.nextInt();
-			
-			//find what chord it actually is
-			chordLabel = chordScan.next();
-			
-			//close the cord scanner
-			chordScan.close();
-			
-			//create the chord object 
-			Chord newCord = new Chord(sequence, bass, chordLabel, 
-					c, cSharp, d, dSharp, e, f,
-					fSharp, g, gSharp, a, aSharp, b,
-					eventNo, meter);
-			
-			//add the new chord to the arraylist
-			data.add(newCord);
-		}
-		
-		//close the chords scanner
-		chordsScan.close();
-		
-		//return the arraylist
-		return data;
-	}
-	
-	//shuffle and split the data
-	public static void ShuffleAndSplit() {
-		//shuffle the data
-		Collections.shuffle(data);
-				
-		//find where to split the data
-		int eightyPercent = (data.size()/10) * 8;
-		
-		//make a train set
-		train = new ArrayList<Chord>();
-		for (int i = 0; i < eightyPercent; i++) {
-			train.add(data.get(i));
-		}
-			
-		//make a test set
-		test = new ArrayList<Chord>();
-		for (int i = eightyPercent; i < data.size(); i++) {
-			test.add(data.get(i));
-		}
-	}
-	
-	//method to create a naive bayes classifier
+	//do the naive bayes classification
 	public static void classify() {
 		//number of features
 		int numFeatures = 14;
@@ -343,49 +163,15 @@ public class Main {
 			System.out.println("Accuracy: " + (double)correctByChord.get(i)/chordCountsTest.get(i));
 		}
 	}
-		
-	//get all the chords available in the train set
-	public static ArrayList<String> getPossibleChords() {
-		ArrayList<String> chordOptions = new ArrayList<String>();
-		for (Chord chord: train) {
-			String label = chord.getChordLabel();
-			if(!chordOptions.contains(label)) {
-				chordOptions.add(label);
-			}
-		}
-		return chordOptions;
-	}
 	
-	//get the number of occurrences of each chord in the train set
-	public static ArrayList<Integer> getChordCountsTrain() {
-		ArrayList<Integer> chordCounts = new ArrayList<Integer>();
-		for (int i = 0; i < chordLabels.size(); i++)  {
-			chordCounts.add(0);
+	//update the count of a particular feature
+	public static ArrayList<ArrayList<Integer>> updateFeatureCounts(Chord trainChord, ArrayList<ArrayList<Integer>> featureCounts, int featureIndex) {
+		int index = chordLabels.indexOf(trainChord.getChordLabel());
+		if (index != -1) {
+			int newVal = featureCounts.get(featureIndex).get(index) + 1;
+			featureCounts.get(featureIndex).set(index, newVal);
 		}
-		for (Chord trainChord: train) {
-			String label = trainChord.getChordLabel();
-			int index = chordLabels.indexOf(label);
-			int newCount = chordCounts.get(index) + 1;
-			chordCounts.set(index, newCount);
-		}
-		return chordCounts;
-	}
-	
-	//get the number of occurrences of each chord in the test set
-	public static ArrayList<Integer> getChordCountsTest() {
-		ArrayList<Integer> chordCounts = new ArrayList<Integer>();
-		for (int i = 0; i < chordLabels.size(); i++)  {
-			chordCounts.add(0);
-		}
-		for (Chord trainChord: test) {
-			String label = trainChord.getChordLabel();
-			int index = chordLabels.indexOf(label);
-			if (index != -1) {
-				int newCount = chordCounts.get(index) + 1;
-				chordCounts.set(index, newCount);
-			}
-		}
-		return chordCounts;
+		return featureCounts;
 	}
 	
 	//update the probabilities based on an added feature
@@ -401,13 +187,192 @@ public class Main {
 		return probabilities;
 	}
 	
-	//update the count of a particular feature
-	public static ArrayList<ArrayList<Integer>> updateFeatureCounts(Chord trainChord, ArrayList<ArrayList<Integer>> featureCounts, int featureIndex) {
-		int index = chordLabels.indexOf(trainChord.getChordLabel());
-		if (index != -1) {
-			int newVal = featureCounts.get(featureIndex).get(index) + 1;
-			featureCounts.get(featureIndex).set(index, newVal);
+	//read in the data
+	public static ArrayList<Chord> ReadData() throws FileNotFoundException {
+		ArrayList<Chord> data = new ArrayList<Chord>();
+		
+		//data to describe each chord
+		String sequence, bass, chordLabel;
+		boolean c, cSharp, d, dSharp, e, f, fSharp, g, gSharp, a, aSharp, b;
+		int eventNo, meter;
+		
+		//open the data file
+		File chordsData = new File("data.txt");
+		Scanner chordsScan = new Scanner(chordsData);
+			
+		//read in the file line by line and get the features
+		while (chordsScan.hasNextLine()) {
+			//each line in the file represents a chorale
+			String chordStr = chordsScan.nextLine();
+				
+			//open a scanner for the chorale
+			Scanner chordScan = new Scanner(chordStr);
+				
+			//there are no spaces in this file, just commas :)
+			chordScan.useDelimiter(",");
+				
+			//get the sequence
+			sequence = chordScan.next();
+			
+			//get the event number
+			eventNo = chordScan.nextInt();
+			
+			//find out which notes are in the chords
+			if (chordScan.next().equals("YES")) {
+				c = true;
+			}
+			else {
+				c = false;
+			}
+			if (chordScan.next().equals("YES")) {
+				cSharp = true;
+			}
+			else {
+				cSharp = false;
+			}
+			if (chordScan.next().equals("YES")) {
+				d = true;
+			}
+			else {
+				d = false;
+			}
+			if (chordScan.next().equals("YES")) {
+				dSharp = true;
+			}
+			else {
+				dSharp = false;
+			}
+			if (chordScan.next().equals("YES")) {
+				e = true;
+			}
+			else {
+				e = false;
+			}
+			if (chordScan.next().equals("YES")) {
+				f = true;
+			}
+			else {
+				f = false;
+			}
+			if (chordScan.next().equals("YES")) {
+				fSharp = true;
+			}
+			else {
+				fSharp = false;
+			}
+			if (chordScan.next().equals("YES")) {
+				g = true;
+			}
+			else {
+				g = false;
+			}
+			if (chordScan.next().equals("YES")) {
+				gSharp = true;
+			}
+			else {
+				gSharp = false;
+			}
+			if (chordScan.next().equals("YES")) {
+				a = true;
+			}
+			else {
+				a = false;
+			}
+			if (chordScan.next().equals("YES")) {
+				aSharp = true;
+			}
+			else {
+				aSharp = false;
+			}
+			if (chordScan.next().equals("YES")) {
+				b = true;
+			}
+			else {
+				b = false;
+			}
+				
+			//find what note is the base of the chord
+			bass = chordScan.next();
+				
+			//find meter of chorale
+			meter = chordScan.nextInt();
+				
+			//find what chord it actually is
+			chordLabel = chordScan.next();
+				
+			//close the cord scanner
+			chordScan.close();
+				
+			//create the chord object 
+			Chord newCord = new Chord(sequence, bass, chordLabel, 
+						c, cSharp, d, dSharp, e, f,
+						fSharp, g, gSharp, a, aSharp, b,
+						eventNo, meter);
+				
+			//add the new chord to the arraylist
+			data.add(newCord);
 		}
-		return featureCounts;
-	}	
+			
+		//close the chords scanner
+		chordsScan.close();
+			
+		//return the arraylist
+		return data;
+	}
+		
+	//shuffle and split the data
+	public static void ShuffleAndSplit() {
+		//shuffle the data
+		Collections.shuffle(data);
+				
+		//find where to split the data
+		int eightyPercent = (data.size()/10) * 8;
+		
+		//make a train set
+		train = new ArrayList<Chord>();
+		for (int i = 0; i < eightyPercent; i++) {
+			train.add(data.get(i));
+		}
+		
+		//make a test set
+		test = new ArrayList<Chord>();
+		for (int i = eightyPercent; i < data.size(); i++) {
+			test.add(data.get(i));
+		}
+	}
+	
+	//get all the chords available in the train set
+	public static void getPossibleChords() {
+		chordLabels = new ArrayList<String>();
+		for (Chord chord: train) {
+			String label = chord.getChordLabel();
+			if(!chordLabels.contains(label)) {
+				chordLabels.add(label);
+			}
+		}
+	}
+	
+	//get the number of occurrences of each chord in the train set and test set
+	public static void getChordCounts() {
+		chordCountsTrain = new ArrayList<Integer>();
+		chordCountsTest = new ArrayList<Integer>();
+		for (int i = 0; i < chordLabels.size(); i++)  {
+			chordCountsTrain.add(0);
+			chordCountsTest.add(0);
+		}
+		for (Chord trainChord: train) {
+			String label = trainChord.getChordLabel();
+			int index = chordLabels.indexOf(label);
+			int newCount = chordCountsTrain.get(index) + 1;
+			chordCountsTrain.set(index, newCount);
+		}
+		for (Chord testChord: test) {
+			String label = testChord.getChordLabel();
+			int index = chordLabels.indexOf(label);
+			if (index != -1) {
+				int newCount = chordCountsTest.get(index) + 1;
+				chordCountsTest.set(index, newCount);
+			}
+		}
+	}
 }
