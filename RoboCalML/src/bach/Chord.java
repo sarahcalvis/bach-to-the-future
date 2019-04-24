@@ -26,4 +26,12 @@ public class Chord {
 		this.eventNo = eventNo;
 		this.meter = meter;
 	}
+	
+	public String getChordLabel() {
+		return chordLabel;
+	}
+	
+	public Boolean getC() {
+		return c;
+	}
 }

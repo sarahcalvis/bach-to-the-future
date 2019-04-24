@@ -29,7 +29,8 @@ public class Main {
 		DecisionTree decisionTree = new DecisionTree(train, test);
 		
 		//perform classification with naive bayes
-		NaiveBayes naiveBayes = new NaiveBayes(train, test);	
+		NaiveBayes naiveBayes = new NaiveBayes(train, test);
+		naiveBayes.classify();
 	}
 	
 	public static ArrayList<Chord> ReadData() throws FileNotFoundException {
@@ -203,7 +204,7 @@ public class Main {
 		//make a test set
 		test = new ArrayList<Chord>();
 		for (int i = eightyPercent; i < data.size(); i++) {
-			train.add(data.get(i));
+			test.add(data.get(i));
 		}
 	}
 }
