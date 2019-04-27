@@ -43,8 +43,7 @@ public class Main {
 	
 	//do the naive bayes classification
 	public static void classify() {
-		//number of features
-		int numFeatures = 16;
+		
 		
 		//probability that a chord is of each type
 		ArrayList<Double> probabilities;
@@ -54,138 +53,61 @@ public class Main {
 		
 		//count number of correct guesses for each chord label
 		ArrayList<Integer> correctByChord = new ArrayList<Integer>();
+		
 		//initialize the array so nothing breaks :)
 		for (int i = 0; i < chordLabels.size(); i++) {
 			correctByChord.add(0);
 		}
 		
+		//number of features
+		int numFeatures = 15;
+		
 		for (Chord testChord: test) {
 			//holds the probability that the chord has each label
 			probabilities = new ArrayList<Double>();
 				
-			//initialize the array so nothing breaks :)
-			for (int i = 0; i < chordLabels.size(); i++) {
-				probabilities.add(0.0);
-			}
-			
 			//get the prior probabilities by dividing the number of occurences of the chord by the size of the train set
 			for (int i = 0; i < chordLabels.size(); i++) {
-				probabilities.set(i, Math.log((double)chordCountsTrain.get(i)/train.size()));
+				probabilities.add(Math.log((double)chordCountsTrain.get(i)/train.size()));
 			}
 			
 			//counts the number of each feature we have
-			ArrayList<ArrayList<Integer>> featureCounts = new ArrayList<ArrayList<Integer>>();			
+			//each row holds a feature
+			//each column holds a how many of a label have this feature
+			ArrayList<int[]> featureCounts = new ArrayList<int[]>();			
 			for (int j = 0; j < numFeatures; j++) {
-				featureCounts.add(new ArrayList<Integer>());
+				featureCounts.add(new int[chordLabels.size()]);
 				for (int i = 0; i < chordLabels.size(); i++) {
-					featureCounts.get(j).add(0);
+					featureCounts.get(j)[i] = 0;
 				}
 			}
 			
+			//get the test notes
+			boolean[] testNotes = testChord.getAllNotes();
+
 			//first count how many of each type of chord have the same c value as this chord
 			for (Chord trainChord: train) {
-				//1
+				//get the test notes
+				boolean[] trainNotes = trainChord.getAllNotes();
+				
+				//features 1 - 13
 				int i = 0;
-				if (trainChord.getC() == testChord.getC()) {
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
+				for (i = 0; i < 12; i++) {
+					if (trainNotes[i] == testNotes[i]) {
+						featureCounts = updateFeatureCounts(trainChord.getChordLabel(), featureCounts, i);
+					}
 				}
-				//2
-				i++;
-				if (trainChord.getCSharp() == testChord.getCSharp()) {
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
-				}
-				//3
-				i++;
-				if (trainChord.getD() == testChord.getD()) {
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
-				}
-				//4
-				i++;
-				if (trainChord.getDSharp() == testChord.getDSharp()) {
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
-				}
-				//5
-				i++;
-				if (trainChord.getE() == testChord.getE()) {
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
-				}
-				//6
-				i++;
-				if (trainChord.getF() == testChord.getF()) {
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
-				}
-				//7
-				i++;
-				if (trainChord.getFSharp() == testChord.getFSharp()) {
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
-				}
-				//8
-				i++;
-				if (trainChord.getG() == testChord.getG()) {
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
-				}
-				//9
-				i++;
-				if (trainChord.getGSharp() == testChord.getGSharp()) {
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
-				}
-				//10
-				i++;
-				if (trainChord.getA() == testChord.getA()) {
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
-				}
-				//11
-				i++;
-				if (trainChord.getASharp() == testChord.getASharp()) {
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
-				}
-				//12
-				i++;
-				if (trainChord.getB() == testChord.getB()) {
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
-				}
-				//13
+				
+				//feature 14
 				i++;
 				if (trainChord.getBass().equals(testChord.getBass())) {
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
+					featureCounts = updateFeatureCounts(trainChord.getChordLabel(), featureCounts, i);
 				}
-				//14
+				
+				//feature 15
 				i++;
 				if (trainChord.getMeter() == testChord.getMeter()) {
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
-				}
-				//15 - thirds! for major chords
-				i++;
-				if ((trainChord.getC() == testChord.getC() && trainChord.getE() == testChord.getE() && trainChord.getG() == testChord.getG()) |
-					(trainChord.getCSharp() == testChord.getCSharp() && trainChord.getF() == testChord.getF() && trainChord.getGSharp() == testChord.getGSharp()) |
-					(trainChord.getD() == testChord.getD() && trainChord.getFSharp() == testChord.getFSharp() && trainChord.getA() == testChord.getA()) |
-					(trainChord.getDSharp() == testChord.getDSharp() && trainChord.getG() == testChord.getG() && trainChord.getASharp() == testChord.getASharp()) |
-					(trainChord.getE() == testChord.getE() && trainChord.getGSharp() == testChord.getGSharp() && trainChord.getB() == testChord.getB()) |
-					(trainChord.getF() == testChord.getF() && trainChord.getA() == testChord.getA() && trainChord.getC() == testChord.getC()) |
-					(trainChord.getFSharp() == testChord.getFSharp() && trainChord.getASharp() == testChord.getASharp() && trainChord.getCSharp() == testChord.getCSharp()) |
-					(trainChord.getG() == testChord.getG() && trainChord.getB() == testChord.getB() && trainChord.getD() == testChord.getD()) |
-					(trainChord.getGSharp() == testChord.getGSharp() && trainChord.getC() == testChord.getC() && trainChord.getDSharp() == testChord.getDSharp()) |
-					(trainChord.getA() == testChord.getA() && trainChord.getCSharp() == testChord.getCSharp() && trainChord.getE() == testChord.getE()) |
-					(trainChord.getASharp() == testChord.getASharp() && trainChord.getD() == testChord.getD() && trainChord.getF() == testChord.getF()) | 
-					(trainChord.getB() == testChord.getB() && trainChord.getDSharp() == testChord.getDSharp() && trainChord.getFSharp() == testChord.getFSharp())) {
-					//System.out.println(testChord.getChordLabel() + trainChord.getChordLabel());
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
-				}
-				//16 thirds for minor chords
-				i++;
-				if ((trainChord.getC() == testChord.getC() && trainChord.getDSharp() == testChord.getDSharp() && trainChord.getG() == testChord.getG()) |
-					(trainChord.getCSharp() == testChord.getCSharp() && trainChord.getE() == testChord.getE() && trainChord.getGSharp() == testChord.getGSharp()) |
-					(trainChord.getD() == testChord.getD() && trainChord.getF() == testChord.getF() && trainChord.getA() == testChord.getA()) |
-					(trainChord.getDSharp() == testChord.getDSharp() && trainChord.getFSharp() == testChord.getFSharp() && trainChord.getASharp() == testChord.getASharp()) |
-					(trainChord.getE() == testChord.getE() && trainChord.getG() == testChord.getG() && trainChord.getB() == testChord.getB()) |
-					(trainChord.getF() == testChord.getF() && trainChord.getGSharp() == testChord.getGSharp() && trainChord.getC() == testChord.getC()) |
-					(trainChord.getFSharp() == testChord.getFSharp() && trainChord.getA() == testChord.getA() && trainChord.getCSharp() == testChord.getCSharp()) |
-					(trainChord.getG() == testChord.getG() && trainChord.getASharp() == testChord.getASharp() && trainChord.getD() == testChord.getD()) |
-					(trainChord.getGSharp() == testChord.getGSharp() &&  trainChord.getB() == testChord.getB() && trainChord.getDSharp() == testChord.getDSharp()) |
-					(trainChord.getA() == testChord.getA() && trainChord.getC() == testChord.getC() && trainChord.getE() == testChord.getE()) |
-					(trainChord.getASharp() == testChord.getASharp() && trainChord.getCSharp() == testChord.getCSharp() && trainChord.getF() == testChord.getF()) |
-					(trainChord.getB() == testChord.getB() && trainChord.getD() == testChord.getD() && trainChord.getFSharp() == testChord.getFSharp())) {
-					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
+					featureCounts = updateFeatureCounts(trainChord.getChordLabel(), featureCounts, i);
 				}
 			}
 
@@ -194,13 +116,14 @@ public class Main {
 					
 			//update number of correct answers
 			int ind = probabilities.indexOf(Collections.max(probabilities));
-			//System.out.println(chordLabels.get(ind) + " " + testChord.getChordLabel());
+
 			if (chordLabels.get(ind).equals(testChord.getChordLabel())) {
 				numCorrect++;
 				int newNum = correctByChord.get(ind) + 1;
 				correctByChord.set(ind, newNum);
 			}
 		}
+		
 		//print accuracy
 		System.out.println("Number Correct: " + numCorrect + "\nTotal: " + test.size());
 		System.out.println("Accuracy: " + (double)numCorrect/test.size());
@@ -213,21 +136,20 @@ public class Main {
 	}
 	
 	//update the count of a particular feature
-	public static ArrayList<ArrayList<Integer>> updateFeatureCounts(Chord trainChord, ArrayList<ArrayList<Integer>> featureCounts, int featureIndex) {
-		int index = chordLabels.indexOf(trainChord.getChordLabel());
+	public static ArrayList<int[]> updateFeatureCounts(String label, ArrayList<int[]> featureCounts, int featureIndex) {
+		int index = chordLabels.indexOf(label);
 		if (index != -1) {
-			int newVal = featureCounts.get(featureIndex).get(index) + 1;
-			featureCounts.get(featureIndex).set(index, newVal);
+			featureCounts.get(featureIndex)[index] += 1;
 		}
 		return featureCounts;
 	}
 	
 	//update the probabilities based on an added feature
-	public static ArrayList<Double> updateProbabilities(ArrayList<Double> probabilities, ArrayList<ArrayList<Integer>> newFeatureCounts) {
+	public static ArrayList<Double> updateProbabilities(ArrayList<Double> probabilities, ArrayList<int[]> newFeatureCounts) {
 		//then divide it by the number of chords of that label in the train set
 		for (int j = 0; j < newFeatureCounts.size(); j++) {
 			for (int i = 0; i < chordLabels.size(); i++) {
-				double newProb = Math.log((double)newFeatureCounts.get(j).get(i)/chordCountsTrain.get(i));
+				double newProb = Math.log((double)newFeatureCounts.get(j)[i]/chordCountsTrain.get(i));
 				newProb += probabilities.get(i);
 				probabilities.set(i, newProb);
 			}
