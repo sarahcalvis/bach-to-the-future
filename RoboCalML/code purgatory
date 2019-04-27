@@ -1,0 +1,58 @@
+//15 - thirds! for major chords
+				i++;
+				/*if ((trainChord.getC() && testChord.getC() && trainChord.getE() && testChord.getE() && trainChord.getG() && testChord.getG()) |
+					(trainChord.getCSharp() && testChord.getCSharp() && trainChord.getF() && testChord.getF() && trainChord.getGSharp() && testChord.getGSharp()) |
+					(trainChord.getD() && testChord.getD() && trainChord.getFSharp() && testChord.getFSharp() && trainChord.getA() && testChord.getA()) |
+					(trainChord.getDSharp() && testChord.getDSharp() && trainChord.getG() && testChord.getG() && trainChord.getASharp() && testChord.getASharp()) |
+					(trainChord.getE() && testChord.getE() && trainChord.getGSharp() && testChord.getGSharp() && trainChord.getB() && testChord.getB()) |
+					(trainChord.getF() && testChord.getF() && trainChord.getA() && testChord.getA() && trainChord.getC() && testChord.getC()) |
+					(trainChord.getFSharp() && testChord.getFSharp() && trainChord.getASharp() && testChord.getASharp() && trainChord.getCSharp() && testChord.getCSharp()) |
+					(trainChord.getG() && testChord.getG() && trainChord.getB() && testChord.getB() && trainChord.getD() && testChord.getD()) |
+					(trainChord.getGSharp() && testChord.getGSharp() && trainChord.getC() && testChord.getC() && trainChord.getDSharp() && testChord.getDSharp()) |
+					(trainChord.getA() && testChord.getA() && trainChord.getCSharp() && testChord.getCSharp() && trainChord.getE() && testChord.getE()) |
+					(trainChord.getASharp() && testChord.getASharp() && trainChord.getD() && testChord.getD() && trainChord.getF() && testChord.getF()) | 
+					(trainChord.getB() && testChord.getB() && trainChord.getDSharp() && testChord.getDSharp() && trainChord.getFSharp() && testChord.getFSharp()))*/
+				if ((trainChord.getC() == testChord.getC() && trainChord.getE() == testChord.getE() && trainChord.getG() == testChord.getG()) |
+					(trainChord.getCSharp() == testChord.getCSharp() && trainChord.getF() == testChord.getF() && trainChord.getGSharp() == testChord.getGSharp()) |
+					(trainChord.getD() == testChord.getD() && trainChord.getFSharp() == testChord.getFSharp() && trainChord.getA() == testChord.getA()) |
+					(trainChord.getDSharp() == testChord.getDSharp() && trainChord.getG() == testChord.getG() && trainChord.getASharp() == testChord.getASharp()) |
+					(trainChord.getE() == testChord.getE() && trainChord.getGSharp() == testChord.getGSharp() && trainChord.getB() == testChord.getB()) |
+					(trainChord.getF() == testChord.getF() && trainChord.getA() == testChord.getA() && trainChord.getC() == testChord.getC()) |
+					(trainChord.getFSharp() == testChord.getFSharp() && trainChord.getASharp() == testChord.getASharp() && trainChord.getCSharp() == testChord.getCSharp()) |
+					(trainChord.getG() == testChord.getG() && trainChord.getB() == testChord.getB() && trainChord.getD() == testChord.getD()) |
+					(trainChord.getGSharp() == testChord.getGSharp() && trainChord.getC() == testChord.getC() && trainChord.getDSharp() == testChord.getDSharp()) |
+					(trainChord.getA() == testChord.getA() && trainChord.getCSharp() == testChord.getCSharp() && trainChord.getE() == testChord.getE()) |
+					(trainChord.getASharp() == testChord.getASharp() && trainChord.getD() == testChord.getD() && trainChord.getF() == testChord.getF()) | 
+					(trainChord.getB() == testChord.getB() && trainChord.getDSharp() == testChord.getDSharp() && trainChord.getFSharp() == testChord.getFSharp())) {
+					//System.out.println("both major chords? "  + testChord.getChordLabel() + " " +  trainChord.getChordLabel());
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
+				}
+				//16 thirds for minor chords
+				i++;
+				/*if ((trainChord.getC() && testChord.getC() && trainChord.getDSharp() && testChord.getDSharp() && trainChord.getG() && testChord.getG()) |
+					(trainChord.getCSharp() && testChord.getCSharp() && trainChord.getE() && testChord.getE() && trainChord.getGSharp() && testChord.getGSharp()) |
+					(trainChord.getD() && testChord.getD() && trainChord.getF() && testChord.getF() && trainChord.getA() && testChord.getA()) |
+					(trainChord.getDSharp() && testChord.getDSharp() && trainChord.getFSharp() && testChord.getFSharp() && trainChord.getASharp() && testChord.getASharp()) |
+					(trainChord.getE() && testChord.getE() && trainChord.getG() && testChord.getG() && trainChord.getB() && testChord.getB()) |
+					(trainChord.getF() && testChord.getF() && trainChord.getGSharp() && testChord.getGSharp() && trainChord.getC() && testChord.getC()) |
+					(trainChord.getFSharp() && testChord.getFSharp() && trainChord.getA() && testChord.getA() && trainChord.getCSharp() && testChord.getCSharp()) |
+					(trainChord.getG() && testChord.getG() && trainChord.getASharp() && testChord.getASharp() && trainChord.getD() && testChord.getD()) |
+					(trainChord.getGSharp() && testChord.getGSharp() &&  trainChord.getB() && testChord.getB() && trainChord.getDSharp() && testChord.getDSharp()) |
+					(trainChord.getA() && testChord.getA() && trainChord.getC() && testChord.getC() && trainChord.getE() && testChord.getE()) |
+					(trainChord.getASharp() && testChord.getASharp() && trainChord.getCSharp() && testChord.getCSharp() && trainChord.getF() && testChord.getF()) |
+					(trainChord.getB() && testChord.getB() && trainChord.getD() && testChord.getD() && trainChord.getFSharp() && testChord.getFSharp()))*/
+				if ((trainChord.getC() == testChord.getC() && trainChord.getDSharp() == testChord.getDSharp() && trainChord.getG() == testChord.getG()) |
+					(trainChord.getCSharp() == testChord.getCSharp() && trainChord.getE() == testChord.getE() && trainChord.getGSharp() == testChord.getGSharp()) |
+					(trainChord.getD() == testChord.getD() && trainChord.getF() == testChord.getF() && trainChord.getA() == testChord.getA()) |
+					(trainChord.getDSharp() == testChord.getDSharp() && trainChord.getFSharp() == testChord.getFSharp() && trainChord.getASharp() == testChord.getASharp()) |
+					(trainChord.getE() == testChord.getE() && trainChord.getG() == testChord.getG() && trainChord.getB() == testChord.getB()) |
+					(trainChord.getF() == testChord.getF() && trainChord.getGSharp() == testChord.getGSharp() && trainChord.getC() == testChord.getC()) |
+					(trainChord.getFSharp() == testChord.getFSharp() && trainChord.getA() == testChord.getA() && trainChord.getCSharp() == testChord.getCSharp()) |
+					(trainChord.getG() == testChord.getG() && trainChord.getASharp() == testChord.getASharp() && trainChord.getD() == testChord.getD()) |
+					(trainChord.getGSharp() == testChord.getGSharp() &&  trainChord.getB() == testChord.getB() && trainChord.getDSharp() == testChord.getDSharp()) |
+					(trainChord.getA() == testChord.getA() && trainChord.getC() == testChord.getC() && trainChord.getE() == testChord.getE()) |
+					(trainChord.getASharp() == testChord.getASharp() && trainChord.getCSharp() == testChord.getCSharp() && trainChord.getF() == testChord.getF()) |
+					(trainChord.getB() == testChord.getB() && trainChord.getD() == testChord.getD() && trainChord.getFSharp() == testChord.getFSharp())) {
+					//System.out.println("both minor chords? "  + testChord.getChordLabel() + " " +  trainChord.getChordLabel());
+					featureCounts = updateFeatureCounts(trainChord, featureCounts, i);
+				}
