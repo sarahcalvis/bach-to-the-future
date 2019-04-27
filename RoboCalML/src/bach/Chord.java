@@ -4,6 +4,7 @@ public class Chord {
 	String sequence, bass, chordLabel;
 	boolean c, cSharp, d, dSharp, e, f, fSharp, g, gSharp, a, aSharp, b;
 	int eventNo, meter;
+	boolean[] allNotes;
 	public Chord(String sequence, String bass, String chordLabel, 
 					boolean c, boolean cSharp, boolean d, boolean dSharp, boolean e, boolean f,
 					boolean fSharp, boolean g, boolean gSharp, boolean a, boolean aSharp, boolean b,
@@ -25,6 +26,7 @@ public class Chord {
 		this.b = b;
 		this.eventNo = eventNo;
 		this.meter = meter;
+		allNotes = new boolean[] {c, cSharp, d, dSharp, e, f, fSharp, g, gSharp, a, aSharp, b};
 	}
 	
 	public String getChordLabel() {
@@ -93,5 +95,31 @@ public class Chord {
 	
 	public int getMeter() {
 		return meter;
+	}
+	
+	public boolean getNote(int i) {
+		return allNotes[i];
+	}
+	
+	public boolean firstThirdFifthM(Chord other) {
+		for (int i = 0; i < 12; i++) {
+			if (this.getNote(i) == other.getNote(i) &&
+				this.getNote((i + 4) % 12) == other.getNote((i + 4) % 12) &&
+				this.getNote((i + 7) % 12) == other.getNote((i + 7) % 12)) {
+				return true;
+			}
+		}	
+		return false;
+	}
+	
+	public boolean firstThirdFifthm(Chord other) {
+		for (int i = 0; i < 12; i++) {
+			if (this.getNote(i) == other.getNote(i) &&
+				this.getNote((i + 3) % 12) == other.getNote((i + 3) % 12) &&
+				this.getNote((i + 7) % 12) == other.getNote((i + 7) % 12)) {
+				return true;
+			}
+		}	
+		return false;
 	}
 }
