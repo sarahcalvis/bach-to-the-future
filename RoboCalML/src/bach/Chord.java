@@ -4,7 +4,7 @@ public class Chord {
 	String sequence, bass, chordLabel;
 	boolean c, cSharp, d, dSharp, e, f, fSharp, g, gSharp, a, aSharp, b;
 	int eventNo, meter;
-	boolean[] allNotes;
+	boolean[] notes;
 	public Chord(String sequence, String bass, String chordLabel, 
 					boolean c, boolean cSharp, boolean d, boolean dSharp, boolean e, boolean f,
 					boolean fSharp, boolean g, boolean gSharp, boolean a, boolean aSharp, boolean b,
@@ -26,7 +26,14 @@ public class Chord {
 		this.b = b;
 		this.eventNo = eventNo;
 		this.meter = meter;
-		allNotes = new boolean[] {c, cSharp, d, dSharp, e, f, fSharp, g, gSharp, a, aSharp, b};
+		notes = new boolean[] {c, cSharp, d, dSharp, e, f, fSharp, g, gSharp, a, aSharp, b};
+	}
+	
+	public boolean sameSong(Chord other) {
+		if (this.sequence.equals(other.sequence)) {
+			return true;
+		}
+		return false;
 	}
 	
 	public String getChordLabel() {
@@ -98,7 +105,15 @@ public class Chord {
 	}
 	
 	public boolean getNote(int i) {
-		return allNotes[i];
+		return notes[i];
+	}
+	
+	public String toString() {
+		String c = sequence + " " + eventNo + " ";
+		for (boolean val: notes) {
+			c += val + " ";
+		}
+		return c + bass + " " + meter + " " + chordLabel;
 	}
 	
 	public int getBassNo() {
