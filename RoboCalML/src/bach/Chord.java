@@ -154,6 +154,15 @@ public class Chord {
 		return false;
 	}
 	
+	public boolean seventh(Chord other) {
+		if (this.firstThirdFifthMBass(other) || this.firstThirdFifthmBass(other)) {
+			if (this.getNote(11) == other.getNote(11)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public boolean firstThirdFifthM(Chord other) {
 		for (int i = 0; i < 12; i++) {
 			if (this.getNote(i) == other.getNote(i) &&

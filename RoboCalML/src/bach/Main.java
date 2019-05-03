@@ -8,6 +8,7 @@ import java.util.Collections;
 /**
  * @author Sarah Calvis and Micaela Robosky
  * This program performs Naive Bayes Classification on the Bach Choral Harmony Data Set
+ * https://archive.ics.uci.edu/ml/datasets/Bach+Choral+Harmony
  */
 public class Main {
 	static ArrayList<Chord> data;				//holds all the data
@@ -177,6 +178,8 @@ public class Main {
 	public static void classify() {
 		//count number of correct guesses
 		int numCorrect = 0;
+		int seventhAcc = 0;
+		int sevenths = 0;
 		
 		//count number of correct guesses for each chord label
 		ArrayList<Integer> correctByChord = new ArrayList<Integer>();
@@ -197,19 +200,29 @@ public class Main {
 				
 			//update number of correct answers
 			int ind = probabilities.indexOf(Collections.max(probabilities));
+			if (chordLabels.get(ind).contains("7")) {
+				sevenths++;
+			}
 			if (chordLabels.get(ind).equals(testChord.getChordLabel())) {
 				numCorrect++;
 				int newNum = correctByChord.get(ind) + 1;
 				correctByChord.set(ind, newNum);
+				if (chordLabels.get(ind).contains("7")) {
+					seventhAcc++;
+				}
 			}
 		}
 		//print accuracy
-		System.out.println("Number Correct: " + numCorrect + "\nTotal: " + test.size());
-		System.out.println("Accuracy: " + (double)numCorrect/test.size());
+		System.out.println("Total Number Correct: " + numCorrect + "\nTotal Number of Chords: " + test.size());
+		System.out.println("Overall Accuracy: " + (double)numCorrect/test.size());
+		
+		//print seventh accuracy
+		System.out.println("\nNumber of Sevenths Correct: " + seventhAcc + "\nTotal: " + sevenths);
+		System.out.println("Accuracy: " + (double)seventhAcc/sevenths);
 		
 		//print accuracy by chord
 		for (int i = 0; i < correctByChord.size(); i++) {
-			System.out.println("\n" + chordLabels.get(i) + " Number Correct: " + correctByChord.get(i) + "\nTotal: " + chordCountsTest.get(i));
+			System.out.println("\nChord: " + chordLabels.get(i) + "\nNumber Correct: " +correctByChord.get(i)+ "\nTotal: " + chordCountsTest.get(i));
 			System.out.println("Accuracy: " + (double)correctByChord.get(i)/chordCountsTest.get(i));
 		}
 	}
@@ -225,13 +238,12 @@ public class Main {
 		for (int i = 0; i < chordLabels.size(); i++) {
 			probabilities.set(i, Math.log((double)chordCountsTrain.get(i)/train.size()));
 		}
-		
 		return probabilities;
 	}
 	
 	//count how many of each chord in the train set share features with our chord in the test set
 	static ArrayList<ArrayList<Integer>> test(Chord testChord) {
-		int numFeatures = 14;
+		int numFeatures = 15;
 		
 		ArrayList<ArrayList<Integer>> featureCounts = new ArrayList<ArrayList<Integer>>();	
 		for (int j = 0; j < numFeatures; j++) {
@@ -268,6 +280,14 @@ public class Main {
 			if (trainChord.getB() == testChord.getB()) { featureCounts = updateFeatureCounts(trainChord, featureCounts, i); }
 			i++;
 			if (trainChord.getBass().equals(testChord.getBass())) { featureCounts = updateFeatureCounts(trainChord, featureCounts, i); }
+			i++;
+			if (trainChord.sameSong(testChord)) { featureCounts = updateFeatureCounts(trainChord, featureCounts, i); }
+			
+			//Working synthetic feature: predicting sevenths
+			i++;
+			if (trainChord.seventh(testChord)) { featureCounts = updateFeatureCounts(trainChord, featureCounts, i); }
+			
+			//FAILED Synthetic Features- here because they are in the report
 	/*		i++;
 			if (trainChord.firstThirdFifthMBass(testChord)) { featureCounts = updateFeatureCounts(trainChord, featureCounts, i); }
 			i++;
@@ -276,8 +296,8 @@ public class Main {
 			if (trainChord.firstThirdFifthM(testChord)) { featureCounts = updateFeatureCounts(trainChord, featureCounts, i); }
 			i++;
 			if (trainChord.firstThirdFifthm(testChord)) { featureCounts = updateFeatureCounts(trainChord, featureCounts, i); }*/	
-			i++;
-			if (trainChord.sameSong(testChord)) { featureCounts = updateFeatureCounts(trainChord, featureCounts, i); }
+			
+			
 		}
 		
 		return featureCounts;
@@ -300,7 +320,6 @@ public class Main {
 			for (int i = 0; i < chordLabels.size(); i++) {
 				if (newFeatureCounts.get(j).get(i) >= 0) {
 					double newProb = Math.log((double)newFeatureCounts.get(j).get(i)/chordCountsTrain.get(i));
-				//if (!Double.isInfinite(newProb)) {
 					newProb += probabilities.get(i);
 					probabilities.set(i, newProb);
 				}
